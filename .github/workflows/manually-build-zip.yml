@@ -1,0 +1,42 @@
+name: Manually Build release zip
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+        default: ''
+
+jobs:
+  build:
+    name: Build release zip
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Stage release files
+        run: |
+          mkdir -p /tmp/tachyon-r2
+          rsync -a --exclude='.git/' --exclude-from='.distignore' . /tmp/tachyon-r2/
+
+      - name: Archive release
+        working-directory: /tmp
+        run: zip -r ${{ github.workspace }}/tachyon-r2.zip tachyon-r2/
+
+      - name: Upload zip to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" tachyon-r2.zip --clobber
+          else
+            gh release create "$TAG" tachyon-r2.zip --title "$TAG" --generate-notes
+          fi
