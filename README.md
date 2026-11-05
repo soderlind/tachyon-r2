@@ -13,6 +13,8 @@ Store WordPress images in [Cloudflare R2](https://developers.cloudflare.com/r2/)
 
 How each upload method works, and the diagram sources, are in [Upload methods](#upload-methods) and [docs/diagrams](docs/diagrams).
 
+Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#illustrate-design).
+
 ## Requirements
 
 - WordPress 6.5+, PHP 8.3+
