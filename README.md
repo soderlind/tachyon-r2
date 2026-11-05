@@ -136,6 +136,34 @@ On multisite, run each command per site with `--url=`.
 
 Deleting an attachment deletes its objects in R2. Uninstalling the plugin removes the settings and copy-job state only; objects in R2 are left alone.
 
+## FAQ
+
+### Why do my images still have local URLs?
+
+Tachyon R2 copies images to R2 but doesn't change URLs; tachyon-plugin does. It only rewrites URLs when `TACHYON_URL` is defined. Until then the settings page shows **Tachyon: Not detected** and the plugin runs in sync mode. Images go to R2, but pages keep serving the local files. Define `TACHYON_URL` in `wp-config.php`. Image URLs then point at the Worker, which reads from R2.
+
+### What should `TACHYON_URL` be?
+
+Your Worker URL, plus a path only if your R2 keys start with one. The path becomes the key prefix. For multisite, tachyon-plugin strips `/sites/N` from the uploads URL, so keys keep it:
+
+| `TACHYON_URL` | Image URL | R2 key |
+|---|---|---|
+| `https://tachyon-edge.<subdomain>.workers.dev` | `…/sites/68/2026/11/photo.jpg` | `sites/68/2026/11/photo.jpg` |
+| `https://tachyon-edge.<subdomain>.workers.dev/uploads` | `…/uploads/sites/68/2026/11/photo.jpg` | `uploads/sites/68/2026/11/photo.jpg` |
+
+To check, request a known image: `curl -I "<TACHYON_URL>/sites/68/2026/11/photo.jpg?w=100"` should return `200`.
+
+### I uploaded images before setting `TACHYON_URL`. Do I have to upload them again?
+
+Only if the key prefix changes. Before `TACHYON_URL` is defined the prefix is empty, so keys look like `sites/68/2026/11/photo.jpg`. If `TACHYON_URL` has no path, nothing changes. If it ends in `/uploads`, you have two options:
+
+- Set `TACHYON_R2_KEY_PREFIX` to `''` to keep the old keys. The Worker's `TACHYON_KEY_PREFIX` must match.
+- Or upload again under the new keys with `wp tachyon-r2 sync --all --keep-local`. The **Copy to R2** panel skips images already marked as in R2, so use the CLI.
+
+### Does the bucket need to be public?
+
+No. Visitors never fetch from R2 directly. The Tachyon Edge Worker reads the bucket through its binding and serves resized images.
+
 ## Limitations
 
 - **Editor URLs.** When images may be remote, the block editor inserts Tachyon URLs into post content. They keep working, but they don't revert if you go back to sync.

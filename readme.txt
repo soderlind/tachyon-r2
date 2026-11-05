@@ -84,9 +84,30 @@ define( 'TACHYON_R2_SKIP_THUMBNAILS', true );  // optional
 
 == Frequently Asked Questions ==
 
+= Why do my images still have local URLs? =
+
+Tachyon R2 copies images to R2 but doesn't change URLs; tachyon-plugin does. It only rewrites URLs when `TACHYON_URL` is defined. Until then the settings page shows "Tachyon: Not detected" and the plugin runs in sync mode. Define `TACHYON_URL` in `wp-config.php`; image URLs then point at the Worker, which reads from R2.
+
+= What should TACHYON_URL be? =
+
+Your Worker URL, plus a path only if your R2 keys start with one. The path becomes the key prefix.
+
+* `https://tachyon-edge.<subdomain>.workers.dev`: keys like `sites/68/2026/11/photo.jpg`.
+* `https://tachyon-edge.<subdomain>.workers.dev/uploads`: keys like `uploads/sites/68/2026/11/photo.jpg`.
+
+To check, request a known image: `curl -I "<TACHYON_URL>/sites/68/2026/11/photo.jpg?w=100"` should return 200.
+
+= I uploaded images before setting TACHYON_URL. Do I have to upload them again? =
+
+Only if the key prefix changes. Before `TACHYON_URL` is defined the prefix is empty. If `TACHYON_URL` has no path, nothing changes. If it ends in `/uploads`, either set `TACHYON_R2_KEY_PREFIX` to `''` to keep the old keys, or run `wp tachyon-r2 sync --all --keep-local` to upload again. The Copy to R2 panel skips images already marked as in R2.
+
+= Does the bucket need to be public? =
+
+No. The Tachyon Edge Worker reads the bucket through its binding and serves resized images.
+
 = Does uninstalling delete my images in R2? =
 
-No. Uninstalling removes the settings only; objects in R2 are left alone. Deleting an attachment does delete its objects.
+No. Uninstalling removes the settings and copy-job state only; objects in R2 are left alone. Deleting an attachment does delete its objects.
 
 = Can I use `wp media regenerate`? =
 
