@@ -7,11 +7,11 @@ Store WordPress images in [Cloudflare R2](https://developers.cloudflare.com/r2/)
 <a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/overview-light.svg">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/out/overview-dark.svg">
-  <img alt="Tachyon R2 architecture: WordPress media uploads pass through Sizes, Router, StreamWrapper and Uploader to the S3 Client, which PUTs objects into the R2 bucket. tachyon-plugin writes Tachyon URLs, the browser requests them from the Tachyon Edge Worker, which reads the Original from R2." src="docs/diagrams/out/overview-light.svg">
+  <img alt="Tachyon R2 architecture: WordPress media uploads pass through Sizes, Router, StreamWrapper and Uploader to the S3 Client, which PUTs objects into the R2 bucket; the Copy to R2 panel and WP-Cron drive Backfill, which copies existing images through the Uploader. tachyon-plugin writes Tachyon URLs, the browser requests them from the Tachyon Edge Worker, which reads the Original from R2." src="docs/diagrams/out/overview-light.svg">
 </picture>
 </a>
 
-How each upload method works, and the diagram sources, are in [Upload methods](#upload-methods) and [docs/diagrams](docs/diagrams).
+How each upload method works, how existing images are copied, and the diagram sources are in [Upload methods](#upload-methods), [Existing images](#existing-images) and [docs/diagrams](docs/diagrams).
 
 Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#illustrate-design).
 
@@ -116,6 +116,13 @@ The **Existing images** panel is on the settings page. When the plugin is networ
 - has Pause, Resume and Cancel. A cancelled or interrupted copy picks up where it stopped, because only images not yet in R2 are processed;
 - lists failed images with the error. **Retry failed** runs them again;
 - in offload or stream mode, can delete the local copies after upload. This is off by default, and an image's local files are deleted only when all of them reached R2.
+
+<a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/copy-existing-view-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/out/copy-existing-view-dark.svg">
+  <img alt="Copy sequence: the panel starts the job over REST, Backfill schedules WP-Cron and returns the counts; WP-Cron and the open panel both run batches under a lock, each calling Uploader::sync, which PUTs the files to R2 through the Client and flags the attachment; Backfill optionally deletes the local copies and reschedules while running." src="docs/diagrams/out/copy-existing-view-light.svg">
+</picture>
+</a>
 
 Local files are kept unless you opt in, even in offload or stream mode. Change the batch size with the `tachyon_r2_backfill_batch_size` filter (default 20). For large libraries, or when WP-Cron is disabled, use `wp tachyon-r2 sync --all --keep-local`.
 

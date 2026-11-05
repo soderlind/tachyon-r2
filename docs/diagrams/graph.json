@@ -2,7 +2,7 @@
 	"schemaVersion": "0.3.0",
 	"kind": "graph",
 	"title": "Tachyon R2 architecture",
-	"summary": "Current state at 0.1.0: Tachyon R2 puts WordPress images in the R2 bucket that the Tachyon Edge Worker reads from, using sync, offload or stream uploads.",
+	"summary": "Current state at 0.1.1: Tachyon R2 puts WordPress images in the R2 bucket that the Tachyon Edge Worker reads from, using sync, offload or stream uploads, and copies existing images with a background job.",
 	"lenses": [
 		"architecture",
 		"data-flow"
@@ -14,11 +14,11 @@
 			"host": "github.com"
 		},
 		"base": {
-			"sha": "e2a42cad0d7294fb268d60c0b92d57ff7cfea373",
+			"sha": "d2668761690b61acd53525905c2120d9cacd4430",
 			"ref": "main"
 		},
 		"head": {
-			"sha": "e2a42cad0d7294fb268d60c0b92d57ff7cfea373",
+			"sha": "d2668761690b61acd53525905c2120d9cacd4430",
 			"ref": "main"
 		},
 		"generator": {
@@ -74,6 +74,17 @@
 			"badges": [],
 			"subtitle": "wp-content/uploads",
 			"summary": "Local files. Kept in sync mode, deleted after upload in offload mode, never written for images in stream mode. Non-images always stay here."
+		},
+		{
+			"id": "cron",
+			"label": "WP-Cron",
+			"kind": "app",
+			"delta": "unchanged",
+			"lane": "wordpress",
+			"files": [],
+			"badges": [],
+			"subtitle": "tachyon_r2_backfill",
+			"summary": "Runs a 20 s copy batch, then schedules the next one 5 s later while the job is running."
 		},
 		{
 			"id": "tachyon",
@@ -170,6 +181,23 @@
 			"summary": "PHP stream wrapper: reads GET, writes PUT on close, stat via HEAD/LIST, scandir via LIST, unlink via DELETE."
 		},
 		{
+			"id": "backfill",
+			"label": "Backfill",
+			"kind": "service",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Backfill.php"
+				}
+			],
+			"badges": [
+				"WP-Cron · REST"
+			],
+			"subtitle": "copy existing images",
+			"summary": "Copies images that lack _tachyon_r2 in time-boxed batches under an option lock. Start, pause, resume and cancel over REST; optionally deletes local copies."
+		},
+		{
 			"id": "client",
 			"label": "Client · Signer",
 			"kind": "service",
@@ -209,7 +237,7 @@
 			],
 			"badges": [],
 			"subtitle": "wp tachyon-r2",
-			"summary": "Settings page, TACHYON_R2_* constants, and status/sync/restore commands."
+			"summary": "Settings for the site or the network (when network-activated), TACHYON_R2_* constants, and status/sync/restore commands."
 		},
 		{
 			"id": "r2",
@@ -243,6 +271,21 @@
 			"badges": [],
 			"subtitle": "img src / srcset",
 			"summary": "Requests Tachyon URLs."
+		},
+		{
+			"id": "panel",
+			"label": "Copy to R2 panel",
+			"kind": "ui",
+			"delta": "unchanged",
+			"lane": "visitors",
+			"files": [
+				{
+					"path": "assets/backfill.js"
+				}
+			],
+			"badges": [],
+			"subtitle": "settings · Media › Tachyon R2",
+			"summary": "Admin notice and the Existing images panel, on the settings page or, when network-activated, Media › Tachyon R2. While open, it steps the job over REST so it moves even without WP-Cron."
 		}
 	],
 	"edges": [
@@ -308,6 +351,39 @@
 			"kind": "call",
 			"delta": "unchanged",
 			"label": "metadata saved",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "panel-backfill",
+			"from": "panel",
+			"to": "backfill",
+			"kind": "http",
+			"delta": "unchanged",
+			"label": "POST /tachyon-r2/v1/backfill",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "cron-backfill",
+			"from": "cron",
+			"to": "backfill",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "step( 20 )",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "backfill-uploader",
+			"from": "backfill",
+			"to": "uploader",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "sync( id, force )",
 			"emphasis": "normal",
 			"animated": false,
 			"files": []
@@ -687,6 +763,164 @@
 					"files": []
 				}
 			]
+		},
+		{
+			"id": "copy-existing",
+			"title": "Copy existing images to R2",
+			"summary": "The admin starts the job from the panel. WP-Cron and the open panel both run batches; an option lock lets only one run at a time.",
+			"delta": "unchanged",
+			"participants": [
+				{
+					"node": "panel"
+				},
+				{
+					"node": "backfill"
+				},
+				{
+					"node": "cron"
+				},
+				{
+					"node": "uploader"
+				},
+				{
+					"node": "client"
+				},
+				{
+					"node": "r2"
+				}
+			],
+			"messages": [
+				{
+					"id": "m24",
+					"from": "panel",
+					"to": "backfill",
+					"label": "POST action=start (delete_local?)",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m25",
+					"from": "backfill",
+					"to": "backfill",
+					"label": "status running, total = pending images",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m26",
+					"from": "backfill",
+					"to": "cron",
+					"label": "wp_schedule_single_event",
+					"kind": "async",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m27",
+					"from": "backfill",
+					"to": "panel",
+					"label": "state · counts",
+					"kind": "return",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m28",
+					"from": "cron",
+					"to": "backfill",
+					"label": "tachyon_r2_backfill → step( 20 )",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m29",
+					"from": "panel",
+					"to": "backfill",
+					"label": "POST action=step (while the panel is open)",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m30",
+					"from": "backfill",
+					"to": "backfill",
+					"label": "take lock, next batch of pending IDs",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m31",
+					"from": "backfill",
+					"to": "uploader",
+					"label": "Uploader::sync( id, force )",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m32",
+					"from": "uploader",
+					"to": "client",
+					"label": "put_file per local file",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m33",
+					"from": "client",
+					"to": "r2",
+					"label": "PUT …/photo.jpg (SigV4)",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m34",
+					"from": "uploader",
+					"to": "uploader",
+					"label": "_tachyon_r2 = 1",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m35",
+					"from": "backfill",
+					"to": "backfill",
+					"label": "delete local copies (optional) · or _tachyon_r2_error",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m36",
+					"from": "backfill",
+					"to": "cron",
+					"label": "reschedule in 5 s while running",
+					"kind": "async",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				}
+			]
 		}
 	],
 	"views": [
@@ -709,6 +943,17 @@
 				"kind": "selection",
 				"flows": [
 					"offload-upload"
+				]
+			}
+		},
+		{
+			"id": "copy-existing-view",
+			"title": "Copy existing images to R2",
+			"lens": "data-flow",
+			"scope": {
+				"kind": "selection",
+				"flows": [
+					"copy-existing"
 				]
 			}
 		},

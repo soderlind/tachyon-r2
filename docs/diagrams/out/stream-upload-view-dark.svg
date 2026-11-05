@@ -1,56 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1714 677" width="1714" height="677" role="img" aria-label="Upload in stream mode" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, Helvetica, Arial, sans-serif">
+<svg data-lane-colors="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1714 677" width="1714" height="677" role="img" aria-label="Upload in stream mode" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, Helvetica, Arial, sans-serif">
 <title>Upload in stream mode</title>
-<desc>Current state at 0.1.0: Tachyon R2 puts WordPress images in the R2 bucket that the Tachyon Edge Worker reads from, using sync, offload or stream uploads.</desc>
+<desc>Current state at 0.1.1: Tachyon R2 puts WordPress images in the R2 bucket that the Tachyon Edge Worker reads from, using sync, offload or stream uploads, and copies existing images with a background job.</desc>
 <defs><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="rgba(110,118,129,.22)"/></pattern><marker id="mk-added" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker><marker id="mko-added" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#3fb950" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-modified" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d29922"/></marker><marker id="mko-modified" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#d29922" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-removed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f85149"/></marker><marker id="mko-removed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#f85149" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e7681"/></marker><marker id="mko-neutral" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#6e7681" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <rect x="0" y="0" width="1714" height="677" rx="12" fill="#0d1117"/>
 <rect x="0" y="0" width="1714" height="677" rx="12" fill="url(#dots)"/>
-<g transform="translate(12,10)"><g><rect class="lanebox" x="4" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/>
-<rect class="lanebox" x="268" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/>
-<rect class="lanebox" x="532" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/>
-<rect class="lanebox" x="796" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/>
-<rect class="lanebox" x="1060" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/>
-<rect class="lanebox" x="1324" y="6" width="208" height="645" rx="12" fill="rgba(110,118,129,.07)"/></g>
-<g><line class="lifeline" x1="108" y1="82" x2="108" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<line class="lifeline" x1="372" y1="82" x2="372" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<rect class="actbar" x="366" y="123" width="12" height="408.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
-<line class="lifeline" x1="636" y1="82" x2="636" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<rect class="actbar" x="630" y="291" width="12" height="164.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
-<line class="lifeline" x1="900" y1="82" x2="900" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<rect class="actbar" x="894" y="329" width="12" height="164.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
-<line class="lifeline" x1="1164" y1="82" x2="1164" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<rect class="actbar" x="1158" y="367" width="12" height="126.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
-<line class="lifeline" x1="1428" y1="82" x2="1428" y2="639" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
-<rect class="actbar" x="1422" y="557" width="12" height="50.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/></g>
-<g><g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="16" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="30" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><rect class="glyph-stroke" x="36" y="43" width="14" height="12" rx="2" stroke="#9198a1" stroke-width="1.4" fill="none"/>
-<path class="glyph-stroke" d="M36,47 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<g transform="translate(12,10)"><g><rect class="lanebox" x="4" y="6" width="208" height="645" rx="12" fill="rgba(68,147,248,0.07)" stroke="rgba(68,147,248,0.3)" stroke-width="1"/>
+<rect class="lanebox" x="268" y="6" width="208" height="645" rx="12" fill="rgba(171,125,248,0.07)" stroke="rgba(171,125,248,0.3)" stroke-width="1"/>
+<rect class="lanebox" x="532" y="6" width="208" height="645" rx="12" fill="rgba(171,125,248,0.07)" stroke="rgba(171,125,248,0.3)" stroke-width="1"/>
+<rect class="lanebox" x="796" y="6" width="208" height="645" rx="12" fill="rgba(171,125,248,0.07)" stroke="rgba(171,125,248,0.3)" stroke-width="1"/>
+<rect class="lanebox" x="1060" y="6" width="208" height="645" rx="12" fill="rgba(240,136,62,0.07)" stroke="rgba(240,136,62,0.3)" stroke-width="1"/>
+<rect class="lanebox" x="1324" y="6" width="208" height="645" rx="12" fill="rgba(171,125,248,0.07)" stroke="rgba(171,125,248,0.3)" stroke-width="1"/></g>
+<g><line class="lifeline" x1="108" y1="82" x2="108" y2="639" stroke="rgba(68,147,248,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<line class="lifeline" x1="372" y1="82" x2="372" y2="639" stroke="rgba(171,125,248,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="366" y="123" width="12" height="408.67" rx="4" fill="rgba(171,125,248,0.35)" stroke="rgba(171,125,248,0.6)"/>
+<line class="lifeline" x1="636" y1="82" x2="636" y2="639" stroke="rgba(171,125,248,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="630" y="291" width="12" height="164.67" rx="4" fill="rgba(171,125,248,0.35)" stroke="rgba(171,125,248,0.6)"/>
+<line class="lifeline" x1="900" y1="82" x2="900" y2="639" stroke="rgba(171,125,248,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="894" y="329" width="12" height="164.67" rx="4" fill="rgba(171,125,248,0.35)" stroke="rgba(171,125,248,0.6)"/>
+<line class="lifeline" x1="1164" y1="82" x2="1164" y2="639" stroke="rgba(240,136,62,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="1158" y="367" width="12" height="126.67" rx="4" fill="rgba(240,136,62,0.35)" stroke="rgba(240,136,62,0.6)"/>
+<line class="lifeline" x1="1428" y1="82" x2="1428" y2="639" stroke="rgba(171,125,248,0.45)" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="1422" y="557" width="12" height="50.67" rx="4" fill="rgba(171,125,248,0.35)" stroke="rgba(171,125,248,0.6)"/></g>
+<g><g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="16" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(68,147,248,0.6)"/>
+<rect class="chip" x="30" y="36" width="26" height="26" rx="7" fill="rgba(68,147,248,0.2)"/><g><rect class="glyph-stroke" x="36" y="43" width="14" height="12" rx="2" stroke="#4493f8" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M36,47 h14" stroke="#4493f8" stroke-width="1.4" fill="none"/></g>
 <text class="ntitle" x="66" y="45" font-size="13" font-weight="600" fill="#e6edf3">Media upload</text>
 <text class="nsub" x="66" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">wp-admin · REST · CLI</text></g>
-<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="280" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="294" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><text class="glyph" x="307" y="53.5" text-anchor="middle" fill="#9198a1" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="280" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(171,125,248,0.6)"/>
+<rect class="chip" x="294" y="36" width="26" height="26" rx="7" fill="rgba(171,125,248,0.2)"/><g><text class="glyph" x="307" y="53.5" text-anchor="middle" fill="#ab7df8" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
 <text class="ntitle" x="330" y="45" font-size="13" font-weight="600" fill="#e6edf3">Router</text>
 <text class="nsub" x="330" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">swaps upload_dir</text>
-<g class="bdg bdg-neutral"><rect x="408.41" y="10" width="48.59" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="432.71" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">stream</text></g></g>
-<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="544" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="558" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><text class="glyph" x="571" y="53.5" text-anchor="middle" fill="#9198a1" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
+<g class="bdg bdg-neutral"><rect x="408.41" y="10" width="48.59" height="16" rx="8" fill="#1c2128" stroke="none" stroke-width="1"/><rect x="408.41" y="10" width="48.59" height="16" rx="8" fill="rgba(171,125,248,0.2)" stroke="rgba(171,125,248,0.6)" stroke-width="1"/><text x="432.71" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#ab7df8">stream</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="544" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(171,125,248,0.6)"/>
+<rect class="chip" x="558" y="36" width="26" height="26" rx="7" fill="rgba(171,125,248,0.2)"/><g><text class="glyph" x="571" y="53.5" text-anchor="middle" fill="#ab7df8" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
 <text class="ntitle" x="594" y="45" font-size="13" font-weight="600" fill="#e6edf3">StreamWrapper</text>
 <text class="nsub" x="594" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">tachyon-r2:// paths</text>
-<g class="bdg bdg-neutral"><rect x="672.41" y="10" width="48.59" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="696.71" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">stream</text></g></g>
-<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="808" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="822" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><rect class="glyph-stroke" x="828.5" y="42.5" width="13" height="13" rx="3" stroke="#9198a1" stroke-width="1.4" fill="none"/>
-<circle class="glyph" fill="#9198a1" cx="835" cy="49" r="2"/></g>
+<g class="bdg bdg-neutral"><rect x="672.41" y="10" width="48.59" height="16" rx="8" fill="#1c2128" stroke="none" stroke-width="1"/><rect x="672.41" y="10" width="48.59" height="16" rx="8" fill="rgba(171,125,248,0.2)" stroke="rgba(171,125,248,0.6)" stroke-width="1"/><text x="696.71" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#ab7df8">stream</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="808" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(171,125,248,0.6)"/>
+<rect class="chip" x="822" y="36" width="26" height="26" rx="7" fill="rgba(171,125,248,0.2)"/><g><rect class="glyph-stroke" x="828.5" y="42.5" width="13" height="13" rx="3" stroke="#ab7df8" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#ab7df8" cx="835" cy="49" r="2"/></g>
 <text class="ntitle" x="858" y="45" font-size="13" font-weight="600" fill="#e6edf3">Client · Signer</text>
 <text class="nsub" x="858" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">S3 API · SigV4</text></g>
-<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1072" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="1086" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><ellipse class="glyph-stroke" stroke="#9198a1" stroke-width="1.4" fill="none" cx="1099" cy="44.5" rx="6.5" ry="2.6"/>
-<path class="glyph-stroke" d="M1092.5,44.5 v9 a6.5,2.6 0 0 0 13 0 v-9" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1072" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(240,136,62,0.6)"/>
+<rect class="chip" x="1086" y="36" width="26" height="26" rx="7" fill="rgba(240,136,62,0.2)"/><g><ellipse class="glyph-stroke" stroke="#f0883e" stroke-width="1.4" fill="none" cx="1099" cy="44.5" rx="6.5" ry="2.6"/>
+<path class="glyph-stroke" d="M1092.5,44.5 v9 a6.5,2.6 0 0 0 13 0 v-9" stroke="#f0883e" stroke-width="1.4" fill="none"/></g>
 <text class="ntitle" x="1122" y="45" font-size="13" font-weight="600" fill="#e6edf3">R2 bucket</text>
 <text class="nsub" x="1122" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">tachyon-uploads</text></g>
-<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1336" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
-<rect class="chip" x="1350" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><text class="glyph" x="1363" y="53.5" text-anchor="middle" fill="#9198a1" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1336" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1.5" stroke="rgba(171,125,248,0.6)"/>
+<rect class="chip" x="1350" y="36" width="26" height="26" rx="7" fill="rgba(171,125,248,0.2)"/><g><text class="glyph" x="1363" y="53.5" text-anchor="middle" fill="#ab7df8" font-size="11" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">{ }</text></g>
 <text class="ntitle" x="1386" y="45" font-size="13" font-weight="600" fill="#e6edf3">Uploader</text>
 <text class="nsub" x="1386" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">put · delete</text>
-<g class="bdg bdg-neutral"><rect x="1431.87" y="10" width="81.13" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="1472.44" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">sync · offload</text></g></g></g>
+<g class="bdg bdg-neutral"><rect x="1431.87" y="10" width="81.13" height="16" rx="8" fill="#1c2128" stroke="none" stroke-width="1"/><rect x="1431.87" y="10" width="81.13" height="16" rx="8" fill="rgba(171,125,248,0.2)" stroke="rgba(171,125,248,0.6)" stroke-width="1"/><text x="1472.44" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#ab7df8">sync · offload</text></g></g></g>
 <g><path class="msg edge-neutral" d="M108,123 L361,123" marker-end="url(#mk-neutral)" fill="none" stroke="#6e7681" stroke-width="1.5"/>
 <circle r="2.6" fill="#6e7681" opacity="0"><animateMotion dur="16s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0;0.0769;1" calcMode="linear" path="M108,123 L361,123"/><animate attributeName="opacity" dur="16s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0;0.0062;0.0708;0.0769;1"/></circle>
 <path class="msg edge-neutral" d="M378,161 h52 a7,7 0 0 1 7,7 v6 a7,7 0 0 1 -7,7 h-47" marker-end="url(#mk-neutral)" fill="none" stroke="#6e7681" stroke-width="1.5"/>
