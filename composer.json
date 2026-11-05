@@ -1,0 +1,32 @@
+{
+	"name": "soderlind/tachyon-r2",
+	"type": "wordpress-plugin",
+	"description": "Store WordPress images in Cloudflare R2 for the Tachyon Edge Worker.",
+	"keywords": [ "wordpress-plugin", "cloudflare", "r2", "tachyon", "images" ],
+	"homepage": "https://github.com/soderlind/tachyon-r2",
+	"license": "GPL-2.0-or-later",
+	"authors": [ { "name": "Per Soderlind", "homepage": "https://soderlind.no" } ],
+	"require": {
+		"php": ">=8.3"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^12.5",
+		"brain/monkey": "^2.6",
+		"pestphp/pest": "^4.5"
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Soderlind\\Plugin\\TachyonR2\\": "includes/",
+			"Soderlind\\Plugin\\TachyonR2\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"platform": { "php": "8.3.0" },
+		"allow-plugins": { "pestphp/pest-plugin": true }
+	},
+	"scripts": {
+		"test": "phpunit",
+		"test:pest": "pest -c phpunit.xml.dist",
+		"lint": "find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l"
+	}
+}
