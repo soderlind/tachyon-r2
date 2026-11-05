@@ -24,7 +24,7 @@ Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#il
 ## Install
 
 1. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
-2. Activate it. On multisite, the settings are network-wide (**Network Admin → Settings → Tachyon R2**).
+2. Activate it. On multisite, where the settings live depends on how you activate it (see [Multisite](#multisite)).
 
 ## Configure
 
@@ -44,6 +44,17 @@ define( 'TACHYON_R2_SKIP_THUMBNAILS', true );  // optional
 ```
 
 Check the connection with **Check connection** on the settings page, or `wp tachyon-r2 status`.
+
+### Multisite
+
+| Activation | Settings page | Settings apply to |
+|---|---|---|
+| Network Activate | **Network Admin → Settings → Tachyon R2** | every site |
+| Activate on one site | that site's **Settings → Tachyon R2** | that site only |
+
+On multisite only network administrators (`manage_network_options`) can change the settings. Constants apply to every site.
+
+A site that was activated on its own before per-site settings existed keeps using the network settings until you save its own; the settings page says so. A site you activate now starts unconfigured.
 
 ### Object keys
 
@@ -94,6 +105,20 @@ When images may be missing locally (offload, stream or skip thumbnails), Tachyon
 - stops Tachyon's REST edit-context override, so the block editor gets Tachyon URLs;
 - returns Tachyon URLs from `wp_get_attachment_url()` for images that only exist in R2.
 
+## Existing images
+
+Images uploaded before the plugin was configured are not in R2 yet. When some are missing, the plugin shows a notice: **N existing images aren't in R2 yet**, with **Copy to R2** and **Not now** buttons.
+
+The **Existing images** panel is on the settings page. When the plugin is network-activated, it is on each site's **Media → Tachyon R2** page. The panel:
+
+- shows how many images are in R2 and how many are not;
+- copies them in the background, newest first, in small WP-Cron batches. An open panel also processes batches, so it finishes faster;
+- has Pause, Resume and Cancel. A cancelled or interrupted copy picks up where it stopped, because only images not yet in R2 are processed;
+- lists failed images with the error. **Retry failed** runs them again;
+- in offload or stream mode, can delete the local copies after upload. This is off by default, and an image's local files are deleted only when all of them reached R2.
+
+Local files are kept unless you opt in, even in offload or stream mode. Change the batch size with the `tachyon_r2_backfill_batch_size` filter (default 20). For large libraries, or when WP-Cron is disabled, use `wp tachyon-r2 sync --all --keep-local`.
+
 ## WP-CLI
 
 ```bash
@@ -109,7 +134,7 @@ On multisite, run each command per site with `--url=`.
 
 ## Deleting
 
-Deleting an attachment deletes its objects in R2. Uninstalling the plugin removes the settings only; objects in R2 are left alone.
+Deleting an attachment deletes its objects in R2. Uninstalling the plugin removes the settings and copy-job state only; objects in R2 are left alone.
 
 ## Limitations
 

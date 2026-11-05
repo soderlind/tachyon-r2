@@ -11,10 +11,17 @@ namespace Soderlind\Plugin\TachyonR2;
 
 /**
  * Reads and writes the `tachyon_r2` option.
+ *
+ * Single site and site-only activation on multisite use the site option;
+ * network activation uses the network option.
  */
 final class Config {
 
 	public const OPTION = 'tachyon_r2';
+
+	public const SCOPE_SINGLE  = 'single';
+	public const SCOPE_NETWORK = 'network';
+	public const SCOPE_SITE    = 'site';
 
 	public const MODES = [ 'sync', 'offload', 'stream' ];
 
@@ -53,8 +60,7 @@ final class Config {
 		if ( null !== self::$cache ) {
 			return self::$cache;
 		}
-		$stored   = is_multisite() ? get_site_option( self::OPTION, [] ) : get_option( self::OPTION, [] );
-		$settings = array_merge( self::DEFAULTS, is_array( $stored ) ? array_intersect_key( $stored, self::DEFAULTS ) : [] );
+		$settings = array_merge( self::DEFAULTS, array_intersect_key( self::stored(), self::DEFAULTS ) );
 		foreach ( self::CONSTANTS as $field => $constant ) {
 			if ( defined( $constant ) ) {
 				$settings[ $field ] = constant( $constant );
@@ -94,7 +100,7 @@ final class Config {
 	 */
 	public static function save( array $settings ): void {
 		$settings = array_intersect_key( $settings, self::DEFAULTS );
-		if ( is_multisite() ) {
+		if ( self::SCOPE_NETWORK === self::scope() ) {
 			update_site_option( self::OPTION, $settings );
 		} else {
 			update_option( self::OPTION, $settings, false );
@@ -108,8 +114,47 @@ final class Config {
 	 * @return array<string, mixed>
 	 */
 	public static function stored(): array {
-		$stored = is_multisite() ? get_site_option( self::OPTION, [] ) : get_option( self::OPTION, [] );
+		$stored = match ( self::scope() ) {
+			self::SCOPE_NETWORK => get_site_option( self::OPTION, [] ),
+			self::SCOPE_SITE    => self::inherits_network()
+				? get_site_option( self::OPTION, [] )
+				: get_option( self::OPTION, [] ),
+			default             => get_option( self::OPTION, [] ),
+		};
 		return is_array( $stored ) ? $stored : [];
+	}
+
+	/** Where settings live: single site, the network, or one site of a network. */
+	public static function scope(): string {
+		if ( ! is_multisite() ) {
+			return self::SCOPE_SINGLE;
+		}
+		return self::network_active() ? self::SCOPE_NETWORK : self::SCOPE_SITE;
+	}
+
+	/** The plugin is network-activated. */
+	public static function network_active(): bool {
+		$plugins = get_site_option( 'active_sitewide_plugins', [] );
+		return is_array( $plugins ) && isset( $plugins[ plugin_basename( dirname( __DIR__ ) . '/tachyon-r2.php' ) ] );
+	}
+
+	/**
+	 * A site-activated site that predates per-site settings keeps using the
+	 * network settings until its own settings are saved.
+	 */
+	public static function inherits_network(): bool {
+		return self::SCOPE_SITE === self::scope() && null === get_option( self::OPTION, null );
+	}
+
+	/**
+	 * Site-only activation starts with empty site settings, so it doesn't inherit the network settings.
+	 *
+	 * @param bool $network_wide Network activation.
+	 */
+	public static function on_activate( $network_wide = false ): void {
+		if ( is_multisite() && ! $network_wide ) {
+			add_option( self::OPTION, [], '', false );
+		}
 	}
 
 	/** Drop the request cache. */
