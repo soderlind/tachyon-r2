@@ -29,6 +29,7 @@ final class Plugin {
 		Router::init();
 		Sizes::init();
 		Urls::init();
+		Backfill::init();
 	}
 
 	public static function storage(): Storage {

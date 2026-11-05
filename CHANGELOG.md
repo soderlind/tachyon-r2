@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.1] - 2026-11-05
+
+### Added
+
+- Copy existing images to R2 from the admin. A notice says how many images aren't in R2 yet. The **Existing images** panel copies them in resumable WP-Cron batches, newest first, with progress, Pause/Resume/Cancel, a list of failed images and an opt-in to delete local copies (offload or stream mode only). With network activation, the panel is under each site's **Media → Tachyon R2**.
+- REST endpoint `tachyon-r2/v1/backfill` and the `tachyon_r2_backfill_batch_size` filter.
+
+### Changed
+
+- Multisite: when the plugin is activated on a single site, its settings page is that site's **Settings → Tachyon R2** and the settings apply to that site only. Network activation keeps the network-wide page. Only network administrators can change the settings.
+- Sites activated before this change keep using the network settings until their own are saved.
+- README credits the diagram tooling.
+
 ## [0.1.0] - 2026-11-05
 
 ### Added

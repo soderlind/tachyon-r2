@@ -4,7 +4,7 @@ Tags: cloudflare, r2, tachyon, images, offload
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ Keys mirror the Tachyon URL path, so the Worker finds the object without any map
 
 The prefix (`uploads`) is the path of `TACHYON_URL`. If your Worker sets `TACHYON_KEY_PREFIX`, set the same prefix here.
 
+= Existing images =
+
+Images uploaded before you configured the plugin are not in R2 yet. A notice offers to copy them. The Existing images panel on the settings page copies them in the background, in small batches, newest first. When the plugin is network-activated, the panel is under each site's Media > Tachyon R2. You can pause, resume or cancel the copy, and retry failed images. In offload or stream mode you can choose to delete the local copies after upload; this is off by default.
+
 = WP-CLI =
 
 * `wp tachyon-r2 status` – settings and connection check.
@@ -61,7 +65,7 @@ Requirements:
 * For offload, stream and skip thumbnails: tachyon-plugin active and `TACHYON_URL` defined.
 
 1. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
-2. Activate it. On multisite, the settings are network-wide (**Network Admin → Settings → Tachyon R2**).
+2. Activate it. On multisite, Network Activate puts the settings in **Network Admin → Settings → Tachyon R2** and they apply to every site. Activating it on one site puts the settings in that site's **Settings → Tachyon R2** and they apply to that site only. Either way, only network administrators can change them.
 3. Configure it in **Settings → Tachyon R2**, or with constants in `wp-config.php`. A constant overrides the setting and locks the field. Use constants for the secret, so it isn't stored in the database:
 
 `
@@ -105,6 +109,13 @@ Plugins that read files from disk (`get_attached_file()`), for example EXIF or o
 Uploads use a single `PUT`, which R2 limits to 5 GB.
 
 == Changelog ==
+
+= 0.1.1 =
+* Copy existing images to R2 from the admin: a notice, and an Existing images panel with resumable background copying, progress, Pause/Resume/Cancel, failed-image list and opt-in deletion of local copies (offload or stream mode).
+* REST endpoint `tachyon-r2/v1/backfill` and the `tachyon_r2_backfill_batch_size` filter.
+* Multisite: when activated on a single site, settings live on that site's Settings > Tachyon R2 and apply to that site only. Only network administrators can change them.
+* Sites activated before this change keep using the network settings until their own are saved.
+* README credits the diagram tooling.
 
 = 0.1.0 =
 * Upload images to Cloudflare R2 over the S3 API (SigV4, no SDK).

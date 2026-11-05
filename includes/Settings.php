@@ -10,30 +10,36 @@ declare(strict_types=1);
 namespace Soderlind\Plugin\TachyonR2;
 
 /**
- * Settings > Tachyon R2 (Network Admin > Settings on multisite).
+ * Settings > Tachyon R2. Network Admin > Settings when network-activated.
+ *
+ * On multisite only network administrators can change the settings.
  */
 final class Settings {
 
 	public const SLUG = 'tachyon-r2';
 
 	public static function init(): void {
-		add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', [ self::class, 'menu' ] );
+		add_action( self::network() ? 'network_admin_menu' : 'admin_menu', [ self::class, 'menu' ] );
 		add_action( 'admin_post_tachyon_r2_save', [ self::class, 'save' ] );
 		add_action( 'admin_post_tachyon_r2_check', [ self::class, 'check' ] );
 	}
 
-	private static function capability(): string {
+	private static function network(): bool {
+		return Config::SCOPE_NETWORK === Config::scope();
+	}
+
+	public static function capability(): string {
 		return is_multisite() ? 'manage_network_options' : 'manage_options';
 	}
 
-	private static function page_url( array $args = [] ): string {
-		$base = is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
+	public static function page_url( array $args = [] ): string {
+		$base = self::network() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
 		return add_query_arg( array_merge( [ 'page' => self::SLUG ], $args ), $base );
 	}
 
 	public static function menu(): void {
 		add_submenu_page(
-			is_multisite() ? 'settings.php' : 'options-general.php',
+			self::network() ? 'settings.php' : 'options-general.php',
 			__( 'Tachyon R2', 'tachyon-r2' ),
 			__( 'Tachyon R2', 'tachyon-r2' ),
 			self::capability(),
@@ -115,6 +121,9 @@ final class Settings {
 			<table class="widefat striped" style="max-width:48rem">
 				<tbody>
 					<tr><th><?php esc_html_e( 'Tachyon', 'tachyon-r2' ); ?></th><td><?php echo Config::tachyon_ready() ? esc_html( (string) TACHYON_URL ) : esc_html__( 'Not detected. Activate tachyon-plugin and define TACHYON_URL; until then only sync mode is used.', 'tachyon-r2' ); ?></td></tr>
+					<?php if ( is_multisite() ) : ?>
+						<tr><th><?php esc_html_e( 'Settings apply to', 'tachyon-r2' ); ?></th><td><?php echo esc_html( self::scope_label() ); ?></td></tr>
+					<?php endif; ?>
 					<tr><th><?php esc_html_e( 'Configured', 'tachyon-r2' ); ?></th><td><?php echo Config::is_configured() ? esc_html__( 'Yes', 'tachyon-r2' ) : esc_html__( 'No', 'tachyon-r2' ); ?></td></tr>
 					<tr><th><?php esc_html_e( 'Mode in effect', 'tachyon-r2' ); ?></th><td><code><?php echo esc_html( Config::mode() ); ?></code><?php echo Config::skip_thumbnails() ? ' + ' . esc_html__( 'skip thumbnails', 'tachyon-r2' ) : ''; ?></td></tr>
 					<tr><th><?php esc_html_e( 'Example key', 'tachyon-r2' ); ?></th><td><code><?php echo esc_html( $example ); ?></code></td></tr>
@@ -155,8 +164,27 @@ final class Settings {
 				<?php wp_nonce_field( 'tachyon_r2_check' ); ?>
 				<?php submit_button( __( 'Check connection', 'tachyon-r2' ), 'secondary' ); ?>
 			</form>
+
+			<?php if ( Config::is_configured() ) : ?>
+				<?php if ( self::network() ) : ?>
+					<h2><?php esc_html_e( 'Existing images', 'tachyon-r2' ); ?></h2>
+					<p><?php esc_html_e( 'Each site copies its existing images from Media > Tachyon R2. To copy every site from the command line:', 'tachyon-r2' ); ?></p>
+					<p><code>wp site list --field=url | xargs -I % wp tachyon-r2 sync --all --keep-local --url=%</code></p>
+				<?php else : ?>
+					<?php Backfill::render_panel(); ?>
+				<?php endif; ?>
+			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	private static function scope_label(): string {
+		if ( self::network() ) {
+			return __( 'All sites in the network', 'tachyon-r2' );
+		}
+		return Config::inherits_network()
+			? __( 'This site. Using the network settings until you save.', 'tachyon-r2' )
+			: __( 'This site', 'tachyon-r2' );
 	}
 
 	private static function text( string $field, string $label, string $value, string $type = 'text', string $help = '' ): void {
