@@ -4,10 +4,14 @@ Store WordPress images in [Cloudflare R2](https://developers.cloudflare.com/r2/)
 
 [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) only rewrites image URLs. It never uploads files. Tachyon R2 fills that gap: it puts each uploaded image in the bucket the Worker reads from, at the key the Worker expects.
 
-```
-upload ─▶ WordPress ─▶ Tachyon R2 ─(S3 API)─▶ R2 bucket ◀─ Tachyon Edge Worker ◀─ visitors
-                         tachyon-plugin rewrites URLs ──────────────────────────────┘
-```
+<a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/overview-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/out/overview-dark.svg">
+  <img alt="Tachyon R2 architecture: WordPress media uploads pass through Sizes, Router, StreamWrapper and Uploader to the S3 Client, which PUTs objects into the R2 bucket. tachyon-plugin writes Tachyon URLs, the browser requests them from the Tachyon Edge Worker, which reads the Original from R2." src="docs/diagrams/out/overview-light.svg">
+</picture>
+</a>
+
+How each upload method works, and the diagram sources, are in [Upload methods](#upload-methods) and [docs/diagrams](docs/diagrams).
 
 ## Requirements
 
@@ -61,6 +65,24 @@ Only images the Worker serves (gif, jpg, jpeg, png, webp, avif) go to R2. PDFs, 
 | **stream** | never written | yes | Uploads are written straight to R2 through a `tachyon-r2://` stream wrapper. |
 
 If Tachyon isn't detected, offload and stream fall back to sync, so images never become unreachable.
+
+Offload mode (sync is the same without the final delete):
+
+<a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/offload-upload-view-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/out/offload-upload-view-dark.svg">
+  <img alt="Offload sequence: core writes the image and sub-sizes to local uploads, calls the Uploader on wp_update_attachment_metadata, the Uploader PUTs each file to R2 through the Client, flags the attachment, and deletes the local copies at shutdown." src="docs/diagrams/out/offload-upload-view-light.svg">
+</picture>
+</a>
+
+Stream mode:
+
+<a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/stream-upload-view-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/out/stream-upload-view-dark.svg">
+  <img alt="Stream sequence: the Router points upload_dir at tachyon-r2://, core moves the upload and saves sub-sizes through the StreamWrapper, which PUTs each file to R2; after metadata is generated the Router turns off and the Uploader flags the attachment." src="docs/diagrams/out/stream-upload-view-light.svg">
+</picture>
+</a>
 
 **Skip thumbnails** stops WordPress from creating sub-size files. The sizes are still recorded in the attachment metadata, so `srcset`, `the_content` and the block editor work; Tachyon creates them on request.
 

@@ -1,0 +1,736 @@
+{
+	"schemaVersion": "0.3.0",
+	"kind": "graph",
+	"title": "Tachyon R2 architecture",
+	"summary": "Current state at 0.1.0: Tachyon R2 puts WordPress images in the R2 bucket that the Tachyon Edge Worker reads from, using sync, offload or stream uploads.",
+	"lenses": [
+		"architecture",
+		"data-flow"
+	],
+	"provenance": {
+		"repo": {
+			"owner": "soderlind",
+			"name": "tachyon-r2",
+			"host": "github.com"
+		},
+		"base": {
+			"sha": "e2a42cad0d7294fb268d60c0b92d57ff7cfea373",
+			"ref": "main"
+		},
+		"head": {
+			"sha": "e2a42cad0d7294fb268d60c0b92d57ff7cfea373",
+			"ref": "main"
+		},
+		"generator": {
+			"name": "illustrate-design",
+			"version": "1.0.0"
+		}
+	},
+	"lanes": [
+		{
+			"id": "wordpress",
+			"label": "WordPress",
+			"subtitle": "core · tachyon-plugin",
+			"order": 0
+		},
+		{
+			"id": "r2plugin",
+			"label": "Tachyon R2",
+			"subtitle": "includes/",
+			"order": 1
+		},
+		{
+			"id": "cloudflare",
+			"label": "Cloudflare",
+			"subtitle": "R2 · Workers",
+			"order": 2
+		},
+		{
+			"id": "visitors",
+			"label": "Visitors",
+			"subtitle": "front end, admin",
+			"order": 3
+		}
+	],
+	"nodes": [
+		{
+			"id": "core",
+			"label": "Media upload",
+			"kind": "app",
+			"delta": "unchanged",
+			"lane": "wordpress",
+			"files": [],
+			"badges": [],
+			"subtitle": "wp-admin · REST · CLI",
+			"summary": "WordPress core upload: wp_handle_upload, sub-sizes via the image editor, wp_update_attachment_metadata."
+		},
+		{
+			"id": "disk",
+			"label": "Local uploads",
+			"kind": "datastore",
+			"delta": "unchanged",
+			"lane": "wordpress",
+			"files": [],
+			"badges": [],
+			"subtitle": "wp-content/uploads",
+			"summary": "Local files. Kept in sync mode, deleted after upload in offload mode, never written for images in stream mode. Non-images always stay here."
+		},
+		{
+			"id": "tachyon",
+			"label": "tachyon-plugin",
+			"kind": "app",
+			"delta": "unchanged",
+			"lane": "wordpress",
+			"files": [],
+			"badges": [],
+			"subtitle": "tachyon_url()",
+			"summary": "Rewrites image URLs to TACHYON_URL with resize arguments. Never uploads files."
+		},
+		{
+			"id": "urls",
+			"label": "Urls",
+			"kind": "module",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Urls.php"
+				}
+			],
+			"badges": [],
+			"subtitle": "Tachyon everywhere",
+			"summary": "When images may be remote: Tachyon on in admin and REST, and wp_get_attachment_url() returns a Tachyon URL for R2-only images."
+		},
+		{
+			"id": "sizes",
+			"label": "Sizes",
+			"kind": "module",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Sizes.php"
+				}
+			],
+			"badges": [
+				"skip thumbnails"
+			],
+			"subtitle": "virtual sub-sizes",
+			"summary": "With skip thumbnails, stops core writing sub-size files and records the sizes in metadata so srcset and the editor still work."
+		},
+		{
+			"id": "router",
+			"label": "Router",
+			"kind": "module",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Router.php"
+				}
+			],
+			"badges": [
+				"stream"
+			],
+			"subtitle": "swaps upload_dir",
+			"summary": "While a supported image is uploaded in stream mode, swaps basedir and path to the tachyon-r2:// wrapper. baseurl is unchanged."
+		},
+		{
+			"id": "uploader",
+			"label": "Uploader",
+			"kind": "module",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Uploader.php"
+				}
+			],
+			"badges": [
+				"sync · offload"
+			],
+			"subtitle": "put · delete",
+			"summary": "On wp_update_attachment_metadata, uploads local image files; in offload mode deletes them at shutdown. Deletes R2 objects with the attachment."
+		},
+		{
+			"id": "wrapper",
+			"label": "StreamWrapper",
+			"kind": "module",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/StreamWrapper.php"
+				}
+			],
+			"badges": [
+				"stream"
+			],
+			"subtitle": "tachyon-r2:// paths",
+			"summary": "PHP stream wrapper: reads GET, writes PUT on close, stat via HEAD/LIST, scandir via LIST, unlink via DELETE."
+		},
+		{
+			"id": "client",
+			"label": "Client · Signer",
+			"kind": "service",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Client.php"
+				},
+				{
+					"path": "includes/Signer.php"
+				},
+				{
+					"path": "includes/Keys.php"
+				}
+			],
+			"badges": [],
+			"subtitle": "S3 API · SigV4",
+			"summary": "Path-style S3 client over the WordPress HTTP API, region auto, no SDK."
+		},
+		{
+			"id": "cli",
+			"label": "Settings · WP-CLI",
+			"kind": "ui",
+			"delta": "unchanged",
+			"lane": "r2plugin",
+			"files": [
+				{
+					"path": "includes/Settings.php"
+				},
+				{
+					"path": "includes/CLI.php"
+				},
+				{
+					"path": "includes/Config.php"
+				}
+			],
+			"badges": [],
+			"subtitle": "wp tachyon-r2",
+			"summary": "Settings page, TACHYON_R2_* constants, and status/sync/restore commands."
+		},
+		{
+			"id": "r2",
+			"label": "R2 bucket",
+			"kind": "datastore",
+			"delta": "unchanged",
+			"lane": "cloudflare",
+			"files": [],
+			"badges": [],
+			"subtitle": "tachyon-uploads",
+			"summary": "Object keys mirror the Tachyon URL path, so the Worker needs no mapping."
+		},
+		{
+			"id": "worker",
+			"label": "Tachyon Edge Worker",
+			"kind": "external",
+			"delta": "unchanged",
+			"lane": "cloudflare",
+			"files": [],
+			"badges": [],
+			"subtitle": "resize on request",
+			"summary": "Reads the Original from R2 and serves the resized Variant."
+		},
+		{
+			"id": "browser",
+			"label": "Browser",
+			"kind": "ui",
+			"delta": "unchanged",
+			"lane": "visitors",
+			"files": [],
+			"badges": [],
+			"subtitle": "img src / srcset",
+			"summary": "Requests Tachyon URLs."
+		}
+	],
+	"edges": [
+		{
+			"id": "cli-uploader",
+			"from": "cli",
+			"to": "uploader",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "sync / restore",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "core-sizes",
+			"from": "core",
+			"to": "sizes",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "which sub-sizes?",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "core-router",
+			"from": "core",
+			"to": "router",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "upload_dir",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "core-wrapper",
+			"from": "core",
+			"to": "wrapper",
+			"kind": "data",
+			"delta": "unchanged",
+			"label": "write tachyon-r2://",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "core-disk",
+			"from": "core",
+			"to": "disk",
+			"kind": "data",
+			"delta": "unchanged",
+			"label": "write files",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "core-uploader",
+			"from": "core",
+			"to": "uploader",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "metadata saved",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "uploader-disk",
+			"from": "uploader",
+			"to": "disk",
+			"kind": "data",
+			"delta": "unchanged",
+			"label": "read · delete (offload)",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "uploader-client",
+			"from": "uploader",
+			"to": "client",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "put_file · delete",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "wrapper-client",
+			"from": "wrapper",
+			"to": "client",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "get · put · head · list",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "client-r2",
+			"from": "client",
+			"to": "r2",
+			"kind": "http",
+			"delta": "unchanged",
+			"label": "PUT /bucket/key",
+			"emphasis": "hero",
+			"animated": true,
+			"files": []
+		},
+		{
+			"id": "urls-tachyon",
+			"from": "urls",
+			"to": "tachyon",
+			"kind": "call",
+			"delta": "unchanged",
+			"label": "force Tachyon URLs",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "tachyon-browser",
+			"from": "tachyon",
+			"to": "browser",
+			"kind": "render",
+			"delta": "unchanged",
+			"label": "Tachyon URL in HTML",
+			"emphasis": "normal",
+			"animated": false,
+			"files": []
+		},
+		{
+			"id": "browser-worker",
+			"from": "browser",
+			"to": "worker",
+			"kind": "http",
+			"delta": "unchanged",
+			"label": "GET ?resize=…",
+			"emphasis": "hero",
+			"animated": true,
+			"files": []
+		},
+		{
+			"id": "worker-r2",
+			"from": "worker",
+			"to": "r2",
+			"kind": "data",
+			"delta": "unchanged",
+			"label": "read Original",
+			"emphasis": "hero",
+			"animated": true,
+			"files": []
+		}
+	],
+	"flows": [
+		{
+			"id": "offload-upload",
+			"title": "Upload in offload mode",
+			"summary": "Core writes the image and sub-sizes locally; Tachyon R2 uploads them, then deletes the local copies. Sync mode is the same without the last step.",
+			"delta": "unchanged",
+			"participants": [
+				{
+					"node": "core"
+				},
+				{
+					"node": "sizes"
+				},
+				{
+					"node": "disk"
+				},
+				{
+					"node": "uploader"
+				},
+				{
+					"node": "client"
+				},
+				{
+					"node": "r2"
+				}
+			],
+			"messages": [
+				{
+					"id": "m1",
+					"from": "core",
+					"to": "disk",
+					"label": "move_uploaded_file photo.jpg",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m2",
+					"from": "core",
+					"to": "sizes",
+					"label": "intermediate_image_sizes_advanced",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m3",
+					"from": "sizes",
+					"to": "core",
+					"label": "all sizes ([] if skip thumbnails)",
+					"kind": "return",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m4",
+					"from": "core",
+					"to": "disk",
+					"label": "write photo-300x225.jpg …",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m5",
+					"from": "core",
+					"to": "uploader",
+					"label": "wp_update_attachment_metadata",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m6",
+					"from": "uploader",
+					"to": "client",
+					"label": "put_file per local file",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m7",
+					"from": "client",
+					"to": "r2",
+					"label": "PUT uploads/sites/N/…/photo.jpg (SigV4)",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m8",
+					"from": "r2",
+					"to": "client",
+					"label": "200",
+					"kind": "return",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m9",
+					"from": "uploader",
+					"to": "uploader",
+					"label": "post meta _tachyon_r2 = 1",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m10",
+					"from": "uploader",
+					"to": "disk",
+					"label": "shutdown: delete local copies (offload only)",
+					"kind": "async",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				}
+			]
+		},
+		{
+			"id": "stream-upload",
+			"title": "Upload in stream mode",
+			"summary": "The upload directory points at the tachyon-r2:// wrapper, so core writes the image and sub-sizes straight to R2.",
+			"delta": "unchanged",
+			"participants": [
+				{
+					"node": "core"
+				},
+				{
+					"node": "router"
+				},
+				{
+					"node": "wrapper"
+				},
+				{
+					"node": "client"
+				},
+				{
+					"node": "r2"
+				},
+				{
+					"node": "uploader"
+				}
+			],
+			"messages": [
+				{
+					"id": "m11",
+					"from": "core",
+					"to": "router",
+					"label": "wp_handle_upload_prefilter",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m12",
+					"from": "router",
+					"to": "router",
+					"label": "supported image → active",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m13",
+					"from": "core",
+					"to": "router",
+					"label": "upload_dir",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m14",
+					"from": "router",
+					"to": "core",
+					"label": "basedir = tachyon-r2://uploads/sites/N",
+					"kind": "return",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m15",
+					"from": "core",
+					"to": "wrapper",
+					"label": "move_uploaded_file → tachyon-r2://…/photo.jpg",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m16",
+					"from": "wrapper",
+					"to": "client",
+					"label": "put on close",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m17",
+					"from": "client",
+					"to": "r2",
+					"label": "PUT …/photo.jpg",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m18",
+					"from": "core",
+					"to": "wrapper",
+					"label": "image editor: read original, save sub-sizes",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m19",
+					"from": "wrapper",
+					"to": "client",
+					"label": "get original · put each size",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m20",
+					"from": "client",
+					"to": "r2",
+					"label": "GET …/photo.jpg · PUT …/photo-300x225.jpg …",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m21",
+					"from": "core",
+					"to": "router",
+					"label": "wp_generate_attachment_metadata → inactive",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m22",
+					"from": "core",
+					"to": "uploader",
+					"label": "wp_update_attachment_metadata",
+					"kind": "sync",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				},
+				{
+					"id": "m23",
+					"from": "uploader",
+					"to": "uploader",
+					"label": "written via wrapper → _tachyon_r2 = 1",
+					"kind": "self",
+					"delta": "unchanged",
+					"animated": true,
+					"files": []
+				}
+			]
+		}
+	],
+	"views": [
+		{
+			"id": "overview",
+			"title": "Tachyon R2 architecture",
+			"lens": "architecture",
+			"summary": "Upload path into R2 and serve path through the Worker.",
+			"scope": {
+				"kind": "all"
+			},
+			"defaultOpen": true,
+			"children": []
+		},
+		{
+			"id": "offload-upload-view",
+			"title": "Upload in offload mode",
+			"lens": "data-flow",
+			"scope": {
+				"kind": "selection",
+				"flows": [
+					"offload-upload"
+				]
+			}
+		},
+		{
+			"id": "stream-upload-view",
+			"title": "Upload in stream mode",
+			"lens": "data-flow",
+			"scope": {
+				"kind": "selection",
+				"flows": [
+					"stream-upload"
+				]
+			}
+		}
+	],
+	"layout": {
+		"direction": "right",
+		"laneOrder": [
+			"wordpress",
+			"r2plugin",
+			"cloudflare",
+			"visitors"
+		]
+	}
+}
