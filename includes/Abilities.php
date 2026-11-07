@@ -23,7 +23,8 @@ final class Abilities {
 		wp_register_ability_category(
 			'tachyon-r2',
 			[
-				'label' => __( 'Tachyon R2', 'tachyon-r2' ),
+				'label'       => __( 'Tachyon R2', 'tachyon-r2' ),
+				'description' => __( 'Inspect Cloudflare R2 storage for WordPress images.', 'tachyon-r2' ),
 			]
 		);
 	}

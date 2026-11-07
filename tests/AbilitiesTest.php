@@ -71,7 +71,13 @@ final class AbilitiesTest extends TestCase {
 		Abilities::register_category();
 		Abilities::register();
 
-		$this->assertSame( [ 'label' => 'Tachyon R2' ], $this->registered_categories['tachyon-r2'] );
+		$this->assertSame(
+			[
+				'label'       => 'Tachyon R2',
+				'description' => 'Inspect Cloudflare R2 storage for WordPress images.',
+			],
+			$this->registered_categories['tachyon-r2']
+		);
 		$this->assertSame(
 			[ 'tachyon-r2/get-status', 'tachyon-r2/get-backfill-status' ],
 			array_keys( $this->registered_abilities )
