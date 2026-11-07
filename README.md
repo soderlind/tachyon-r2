@@ -17,7 +17,7 @@ Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#il
 
 ## Requirements
 
-- WordPress 6.5+, PHP 8.3+
+- WordPress 7.0+, PHP 8.3+
 - An R2 bucket and an [R2 API token](https://developers.cloudflare.com/r2/api/tokens/) with *Object Read & Write* on that bucket
 - For offload, stream and skip-thumbnails: [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) active and `TACHYON_URL` defined
 
@@ -138,6 +138,10 @@ wp tachyon-r2 restore --all               # download images back to disk
 `sync` moves an existing library to R2. In offload or stream mode it removes the local copies unless you pass `--keep-local`. `restore` brings files back before you switch to sync mode or deactivate the plugin.
 
 On multisite, run each command per site with `--url=`.
+
+## Abilities API
+
+On WordPress 7.0+, Tachyon R2 registers the `tachyon-r2/get-status` and `tachyon-r2/get-backfill-status` read-only abilities. They are available through the WordPress Abilities REST API and, when the WordPress MCP Adapter is installed, as MCP tools. Both require the capability used to manage Tachyon R2 settings.
 
 ## Deleting
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.2] - 2026-11-07
+
+### Added
+
+- Read-only Abilities API abilities `tachyon-r2/get-status` and `tachyon-r2/get-backfill-status`. They are exposed in the Abilities REST API and, when the WordPress MCP Adapter is installed, as MCP tools. Both require the capability that manages the settings.
+
+### Changed
+
+- Requires WordPress 7.0.
+- `wp tachyon-r2 status` shares its status logic with the ability.
+
+### Documentation
+
+- Lane-colored diagrams and a copy-existing view.
+- FAQ on `TACHYON_URL`, the key prefix and local URLs.
+
 ## [0.1.1] - 2026-11-05
 
 ### Added
