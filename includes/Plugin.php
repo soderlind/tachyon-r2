@@ -18,6 +18,7 @@ final class Plugin {
 
 	public static function boot(): void {
 		Settings::init();
+		Abilities::init();
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'tachyon-r2', CLI::class );
 		}

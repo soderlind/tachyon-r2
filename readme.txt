@@ -1,10 +1,10 @@
 === Tachyon R2 ===
 Contributors: PerS
 Tags: cloudflare, r2, tachyon, images, offload
-Requires at least: 6.5
+Requires at least: 7.0
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,10 @@ Images uploaded before you configured the plugin are not in R2 yet. A notice off
 * `wp tachyon-r2 restore --all` – download images back to disk, before you switch to sync mode or deactivate the plugin.
 
 On multisite, run each command per site with `--url=`.
+
+= Abilities API =
+
+On WordPress 7.0+, Tachyon R2 registers the `tachyon-r2/get-status` and `tachyon-r2/get-backfill-status` read-only abilities. They are available through the WordPress Abilities REST API and, when the WordPress MCP Adapter is installed, as MCP tools. Both require the capability used to manage Tachyon R2 settings.
 
 Source, diagrams and issues: https://github.com/soderlind/tachyon-r2
 
@@ -130,6 +134,12 @@ Plugins that read files from disk (`get_attached_file()`), for example EXIF or o
 Uploads use a single `PUT`, which R2 limits to 5 GB.
 
 == Changelog ==
+
+= 0.1.2 =
+* Read-only Abilities API abilities `tachyon-r2/get-status` and `tachyon-r2/get-backfill-status`, exposed in the Abilities REST API and, with the WordPress MCP Adapter, as MCP tools. Both require the settings capability.
+* Requires WordPress 7.0.
+* `wp tachyon-r2 status` shares its status logic with the ability.
+* Docs: lane-colored diagrams and a copy-existing view; FAQ on `TACHYON_URL`, the key prefix and local URLs.
 
 = 0.1.1 =
 * Copy existing images to R2 from the admin: a notice, and an Existing images panel with resumable background copying, progress, Pause/Resume/Cancel, failed-image list and opt-in deletion of local copies (offload or stream mode).

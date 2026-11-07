@@ -3,8 +3,8 @@
  * Plugin Name:       Tachyon R2
  * Plugin URI:        https://github.com/soderlind/tachyon-r2
  * Description:       Store WordPress images in Cloudflare R2 for the Tachyon Edge Worker. Sync, offload or stream uploads.
- * Version:           0.1.1
- * Requires at least: 6.5
+ * Version:           0.1.2
+ * Requires at least: 7.0
  * Requires PHP:      8.3
  * Author:            Per Soderlind
  * Author URI:        https://soderlind.no
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 
 spl_autoload_register(
 	static function ( string $class ): void {

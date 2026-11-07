@@ -27,22 +27,22 @@ final class CLI {
 	 * @param array<string, string> $assoc_args Assoc args.
 	 */
 	public function status( array $args, array $assoc_args ): void {
+		$status = Status::get();
 		$rows = [
-			[ 'field' => 'tachyon', 'value' => Config::tachyon_ready() ? (string) TACHYON_URL : 'not detected' ],
-			[ 'field' => 'configured', 'value' => Config::is_configured() ? 'yes' : 'no' ],
-			[ 'field' => 'endpoint', 'value' => Config::endpoint() ],
-			[ 'field' => 'bucket', 'value' => (string) Config::get( 'bucket' ) ],
-			[ 'field' => 'key_prefix', 'value' => Config::key_prefix() ],
-			[ 'field' => 'mode', 'value' => Config::mode() . ( Config::mode() !== Config::get( 'mode' ) ? ' (configured: ' . Config::get( 'mode' ) . ')' : '' ) ],
-			[ 'field' => 'skip_thumbnails', 'value' => Config::skip_thumbnails() ? 'yes' : 'no' ],
+			[ 'field' => 'tachyon', 'value' => $status['tachyon'] ?? 'not detected' ],
+			[ 'field' => 'configured', 'value' => $status['configured'] ? 'yes' : 'no' ],
+			[ 'field' => 'endpoint', 'value' => $status['endpoint'] ],
+			[ 'field' => 'bucket', 'value' => $status['bucket'] ],
+			[ 'field' => 'key_prefix', 'value' => $status['key_prefix'] ],
+			[ 'field' => 'mode', 'value' => $status['mode'] . ( $status['mode'] !== $status['configured_mode'] ? ' (configured: ' . $status['configured_mode'] . ')' : '' ) ],
+			[ 'field' => 'skip_thumbnails', 'value' => $status['skip_thumbnails'] ? 'yes' : 'no' ],
 		];
 		WP_CLI\Utils\format_items( 'table', $rows, [ 'field', 'value' ] );
-		if ( ! Config::is_configured() ) {
+		if ( ! $status['configured'] ) {
 			WP_CLI::error( 'Not configured.' );
 		}
-		$check = Client::from_config()->check();
-		if ( is_wp_error( $check ) ) {
-			WP_CLI::error( 'Connection failed: ' . $check->get_error_message() );
+		if ( 'failed' === $status['connection'] ) {
+			WP_CLI::error( 'Connection failed: ' . $status['connection_error'] );
 		}
 		WP_CLI::success( 'Connected to the bucket.' );
 	}
