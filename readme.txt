@@ -4,7 +4,7 @@ Tags: cloudflare, r2, tachyon, images, offload
 Requires at least: 7.0
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,11 +23,11 @@ Store WordPress images in Cloudflare R2 for the Tachyon Edge Worker. Sync, offlo
 
 = Upload methods =
 
-* **sync** (default): copies each image and its sizes to R2 and keeps local files. Doesn't need Tachyon. Safe to turn off at any time.
-* **offload**: files are written locally, uploaded, then removed at the end of the request. Needs Tachyon.
-* **stream**: uploads are written straight to R2 through a `tachyon-r2://` stream wrapper. Needs Tachyon.
+* **sync** (default): copies each image and its sizes to R2 and keeps local files. Doesn't need `TACHYON_URL`. Safe to turn off at any time.
+* **offload**: files are written locally, uploaded, then removed at the end of the request. Needs `TACHYON_URL`.
+* **stream**: uploads are written straight to R2 through a `tachyon-r2://` stream wrapper. Needs `TACHYON_URL`.
 
-If Tachyon isn't detected, offload and stream fall back to sync, so images never become unreachable.
+All methods require tachyon-plugin to be active. If Tachyon isn't initialized, for example because `TACHYON_URL` is not defined, offload and stream fall back to sync, so images never become unreachable.
 
 **Skip thumbnails** stops WordPress from creating sub-size files. The sizes are still recorded in the attachment metadata, so `srcset`, `the_content` and the block editor work; Tachyon creates them on request.
 
@@ -66,11 +66,13 @@ Source, diagrams and issues: https://github.com/soderlind/tachyon-r2
 Requirements:
 
 * An R2 bucket and an R2 API token with *Object Read & Write* on that bucket.
-* For offload, stream and skip thumbnails: tachyon-plugin active and `TACHYON_URL` defined.
+* [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) installed and active.
+* For offload, stream and skip thumbnails: `TACHYON_URL` defined.
 
-1. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
-2. Activate it. On multisite, Network Activate puts the settings in **Network Admin → Settings → Tachyon R2** and they apply to every site. Activating it on one site puts the settings in that site's **Settings → Tachyon R2** and they apply to that site only. Either way, only network administrators can change them.
-3. Configure it in **Settings → Tachyon R2**, or with constants in `wp-config.php`. A constant overrides the setting and locks the field. Use constants for the secret, so it isn't stored in the database:
+1. Install [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) in `wp-content/plugins/tachyon-plugin` and activate it. If you network-activate Tachyon R2, network-activate tachyon-plugin too.
+2. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
+3. Activate Tachyon R2. On multisite, Network Activate puts the settings in **Network Admin → Settings → Tachyon R2** and they apply to every site. Activating it on one site puts the settings in that site's **Settings → Tachyon R2** and they apply to that site only. Either way, only network administrators can change them.
+4. Configure it in **Settings → Tachyon R2**, or with constants in `wp-config.php`. A constant overrides the setting and locks the field. Use constants for the secret, so it isn't stored in the database:
 
 `
 define( 'TACHYON_URL', 'https://tachyon-edge.example.workers.dev/uploads' );
@@ -84,7 +86,7 @@ define( 'TACHYON_R2_SKIP_THUMBNAILS', true );  // optional
 // define( 'TACHYON_R2_ENDPOINT', 'https://<account>.eu.r2.cloudflarestorage.com' ); // jurisdictions
 `
 
-4. Click **Check connection** on the settings page, or run `wp tachyon-r2 status`.
+5. Click **Check connection** on the settings page, or run `wp tachyon-r2 status`.
 
 == Frequently Asked Questions ==
 
@@ -134,6 +136,9 @@ Plugins that read files from disk (`get_attached_file()`), for example EXIF or o
 Uploads use a single `PUT`, which R2 limits to 5 GB.
 
 == Changelog ==
+
+= 0.1.3 =
+* Require tachyon-plugin to be installed and active for all upload methods.
 
 = 0.1.2 =
 * Read-only Abilities API abilities `tachyon-r2/get-status` and `tachyon-r2/get-backfill-status`, exposed in the Abilities REST API and, with the WordPress MCP Adapter, as MCP tools. Both require the settings capability.
