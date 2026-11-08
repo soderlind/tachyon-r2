@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3] - 2026-11-08
+
+### Changed
+
+- Require tachyon-plugin to be installed and active for all upload methods.
+
 ## [0.1.2] - 2026-11-07
 
 ### Added

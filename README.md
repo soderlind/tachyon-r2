@@ -18,13 +18,15 @@ Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#il
 ## Requirements
 
 - WordPress 7.0+, PHP 8.3+
+- [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) installed and active
 - An R2 bucket and an [R2 API token](https://developers.cloudflare.com/r2/api/tokens/) with *Object Read & Write* on that bucket
-- For offload, stream and skip-thumbnails: [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) active and `TACHYON_URL` defined
+- For offload, stream and skip-thumbnails: `TACHYON_URL` defined
 
 ## Install
 
-1. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
-2. Activate it. On multisite, where the settings live depends on how you activate it (see [Multisite](#multisite)).
+1. Install [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) in `wp-content/plugins/tachyon-plugin` and activate it. If you network-activate Tachyon R2, network-activate tachyon-plugin too.
+2. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
+3. Activate Tachyon R2. On multisite, where the settings live depends on how you activate it (see [Multisite](#multisite)).
 
 ## Configure
 
@@ -71,13 +73,13 @@ The prefix (`uploads`) is the path of `TACHYON_URL`. If your Worker sets `TACHYO
 
 Only images the Worker serves (gif, jpg, jpeg, png, webp, avif) go to R2. PDFs, video and other files always stay local.
 
-| Method | Local files | Needs Tachyon | Notes |
+| Method | Local files | Needs `TACHYON_URL` | Notes |
 |---|---|---|---|
 | **sync** (default) | kept | no | Copies each image and its sizes to R2. Safe to turn off at any time. |
 | **offload** | deleted after upload | yes | Files are written locally, uploaded, then removed at the end of the request. |
 | **stream** | never written | yes | Uploads are written straight to R2 through a `tachyon-r2://` stream wrapper. |
 
-If Tachyon isn't detected, offload and stream fall back to sync, so images never become unreachable.
+All methods require tachyon-plugin to be active. If Tachyon isn't initialized, for example because `TACHYON_URL` is not defined, offload and stream fall back to sync, so images never become unreachable.
 
 Offload mode (sync is the same without the final delete):
 
