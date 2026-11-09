@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] - 2026-11-09
+
+### Changed
+
+- Remove `Requires Plugins: tachyon-plugin`, so Tachyon R2 also works with Tachyon Edge Images. Offload and stream still need `tachyon_url()` and `TACHYON_URL`, and fall back to sync without them.
+
 ## [0.1.3] - 2026-11-08
 
 ### Changed
