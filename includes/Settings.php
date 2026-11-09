@@ -120,7 +120,7 @@ final class Settings {
 			<h2><?php esc_html_e( 'Status', 'tachyon-r2' ); ?></h2>
 			<table class="widefat striped" style="max-width:48rem">
 				<tbody>
-					<tr><th><?php esc_html_e( 'Tachyon', 'tachyon-r2' ); ?></th><td><?php echo Config::tachyon_ready() ? esc_html( (string) TACHYON_URL ) : esc_html__( 'Not detected. Activate tachyon-plugin and define TACHYON_URL; until then only sync mode is used.', 'tachyon-r2' ); ?></td></tr>
+					<tr><th><?php esc_html_e( 'Tachyon', 'tachyon-r2' ); ?></th><td><?php echo Config::tachyon_ready() ? esc_html( (string) TACHYON_URL ) : esc_html__( 'Not detected. Activate Tachyon Edge Images or tachyon-plugin and define TACHYON_URL; until then only sync mode is used.', 'tachyon-r2' ); ?></td></tr>
 					<?php if ( is_multisite() ) : ?>
 						<tr><th><?php esc_html_e( 'Settings apply to', 'tachyon-r2' ); ?></th><td><?php echo esc_html( self::scope_label() ); ?></td></tr>
 					<?php endif; ?>

@@ -2,7 +2,7 @@
 
 Store WordPress images in [Cloudflare R2](https://developers.cloudflare.com/r2/) so the [Tachyon Edge](https://github.com/soderlind/tachyon-edge) Worker can serve and resize them.
 
-[tachyon-plugin](https://github.com/humanmade/tachyon-plugin) only rewrites image URLs. It never uploads files. Tachyon R2 fills that gap: it puts each uploaded image in the bucket the Worker reads from, at the key the Worker expects.
+[Tachyon Edge Images](https://github.com/soderlind/tachyon-edge-images) and [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) only rewrite image URLs. They never upload files. Tachyon R2 fills that gap: it puts each uploaded image in the bucket the Worker reads from, at the key the Worker expects.
 
 <a href="https://raw.githubusercontent.com/soderlind/tachyon-r2/main/docs/diagrams/out/overview-light.svg">
 <picture>
@@ -18,13 +18,13 @@ Diagrams created with [Illustrate Design](https://github.com/soderlind/skills#il
 ## Requirements
 
 - WordPress 7.0+, PHP 8.3+
-- [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) installed and active
+- A Tachyon plugin that rewrites image URLs: [Tachyon Edge Images](https://github.com/soderlind/tachyon-edge-images) or [tachyon-plugin](https://github.com/humanmade/tachyon-plugin). Without one, Tachyon R2 runs in sync mode only.
 - An R2 bucket and an [R2 API token](https://developers.cloudflare.com/r2/api/tokens/) with *Object Read & Write* on that bucket
 - For offload, stream and skip-thumbnails: `TACHYON_URL` defined
 
 ## Install
 
-1. Install [tachyon-plugin](https://github.com/humanmade/tachyon-plugin) in `wp-content/plugins/tachyon-plugin` and activate it. If you network-activate Tachyon R2, network-activate tachyon-plugin too.
+1. Install and activate [Tachyon Edge Images](https://github.com/soderlind/tachyon-edge-images) or [tachyon-plugin](https://github.com/humanmade/tachyon-plugin). If you network-activate Tachyon R2, network-activate the Tachyon plugin too.
 2. Download `tachyon-r2.zip` from the [latest release](https://github.com/soderlind/tachyon-r2/releases) and upload it in **Plugins → Add New → Upload Plugin**.
 3. Activate Tachyon R2. On multisite, where the settings live depends on how you activate it (see [Multisite](#multisite)).
 
@@ -79,7 +79,7 @@ Only images the Worker serves (gif, jpg, jpeg, png, webp, avif) go to R2. PDFs, 
 | **offload** | deleted after upload | yes | Files are written locally, uploaded, then removed at the end of the request. |
 | **stream** | never written | yes | Uploads are written straight to R2 through a `tachyon-r2://` stream wrapper. |
 
-All methods require tachyon-plugin to be active. If Tachyon isn't initialized, for example because `TACHYON_URL` is not defined, offload and stream fall back to sync, so images never become unreachable.
+Offload and stream need a Tachyon plugin (Tachyon Edge Images or tachyon-plugin) and `TACHYON_URL`. Without them, offload and stream fall back to sync, so images never become unreachable.
 
 Offload mode (sync is the same without the final delete):
 
@@ -153,7 +153,7 @@ Deleting an attachment deletes its objects in R2. Uninstalling the plugin remove
 
 ### Why do my images still have local URLs?
 
-Tachyon R2 copies images to R2 but doesn't change URLs; tachyon-plugin does. It only rewrites URLs when `TACHYON_URL` is defined. Until then the settings page shows **Tachyon: Not detected** and the plugin runs in sync mode. Images go to R2, but pages keep serving the local files. Define `TACHYON_URL` in `wp-config.php`. Image URLs then point at the Worker, which reads from R2.
+Tachyon R2 copies images to R2 but doesn't change URLs; the Tachyon plugin (Tachyon Edge Images or tachyon-plugin) does. It only rewrites URLs when `TACHYON_URL` is defined. Until then the settings page shows **Tachyon: Not detected** and the plugin runs in sync mode. Images go to R2, but pages keep serving the local files. Define `TACHYON_URL` in `wp-config.php`. Image URLs then point at the Worker, which reads from R2.
 
 ### What should `TACHYON_URL` be?
 

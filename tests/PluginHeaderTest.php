@@ -8,13 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 final class PluginHeaderTest extends TestCase {
 
-	public function test_tachyon_plugin_is_a_required_dependency(): void {
+	public function test_does_not_require_a_specific_tachyon_plugin(): void {
+		// Either tachyon-plugin or Tachyon Edge Images provides tachyon_url(); Config::tachyon_ready() checks at runtime.
 		$header = file_get_contents( dirname( __DIR__ ) . '/tachyon-r2.php', false, null, 0, 8192 );
 		$this->assertIsString( $header );
-		$this->assertSame(
-			1,
-			preg_match( '/^[ \t\/*#@]*Requires Plugins:[ \t]*([^\r\n]+)/mi', $header, $matches )
-		);
-		$this->assertContains( 'tachyon-plugin', array_map( 'trim', explode( ',', $matches[1] ) ) );
+		$this->assertSame( 0, preg_match( '/^[ \t\/*#@]*Requires Plugins:/mi', $header ) );
 	}
 }

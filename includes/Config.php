@@ -171,7 +171,7 @@ final class Config {
 			&& ( '' !== (string) $s['account_id'] || '' !== (string) $s['endpoint'] );
 	}
 
-	/** tachyon-plugin is active and TACHYON_URL is defined. */
+	/** tachyon_url() exists (tachyon-plugin or Tachyon Edge Images) and TACHYON_URL is defined. */
 	public static function tachyon_ready(): bool {
 		return function_exists( 'tachyon_url' ) && defined( 'TACHYON_URL' ) && '' !== (string) TACHYON_URL;
 	}
